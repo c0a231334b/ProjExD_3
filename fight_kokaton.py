@@ -199,6 +199,7 @@ def main():
                         score.score += 1
                         bird.change_img(6, screen) # こうかとん画像が泣いてるのに切り替え
                         pg.display.update()
+                beams = [beam for beam in beams if beam is not None]
 
 
         key_lst = pg.key.get_pressed()
@@ -208,7 +209,7 @@ def main():
         beams = [beam for beam in beams if beam is not None]
         for bomb in bombs: 
             bomb.update(screen)
-        if beam is not None:
+        for beam in beams:
             beam.update(screen)
         # bomb2.update(screen)
         score.update(screen)
