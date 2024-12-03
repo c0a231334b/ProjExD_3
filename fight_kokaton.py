@@ -140,6 +140,21 @@ class Bomb:
         self.rct.move_ip(self.vx, self.vy)
         screen.blit(self.img, self.rct)
 
+class Score:
+    """
+    スコアに関するクラス
+    """
+    def __init__(self):
+        self.font = pg.font.SysFont("hgp創英角ﾎﾟｯﾌﾟ体", 30)
+        self.color = (0, 0, 255)
+        self.score = 0
+        self.img = self.font.render("スコア:", 0, self.color)
+        self.center = (100, HEIGHT-50)
+
+    def update(self, screen: pg.Surface):
+        self.img = self.font.render(f"スコア: {self.score}", 0, self.color)
+        screen.blit(self.img, self.center)
+
 
 def main():
     pg.display.set_caption("たたかえ！こうかとん")
@@ -150,6 +165,7 @@ def main():
     beam = None  # Beam(bird)    # Beamクラスのインスタンス生成
     # bomb2 = Bomb((0, 0, 255), 20) # Bombを示す青色の半径20の円を生成
     bombs = [Bomb((255, 0, 0), 10) for _ in range(NUM_OF_BOMBS)] # ５個の爆弾のリスト
+    score = Score()
     clock = pg.time.Clock()
     tmr = 0
     while True:
@@ -177,8 +193,10 @@ def main():
                 if beam.rct.colliderect(bomb.rct): # ビームが爆弾を破壊した場合(ボムとビームは逆で動く)
                     beam = None
                     bombs[i] = None
+                    score.score += 1
                     bird.change_img(6, screen) # こうかとん画像が泣いてるのに切り替え
                     pg.display.update()
+
 
         key_lst = pg.key.get_pressed()
         bird.update(key_lst, screen) #どのキーが押されているかを判定し，こうかとんを移動させる
@@ -189,10 +207,10 @@ def main():
         if beam is not None:
             beam.update(screen)
         # bomb2.update(screen)
+        score.update(screen)
         pg.display.update()
         tmr += 1
         clock.tick(50)
-
 
 if __name__ == "__main__":
     pg.init()
