@@ -159,17 +159,24 @@ def main():
                 beam = Beam(bird)            
         screen.blit(bg_img, [0, 0])
         
-        if bird.rct.colliderect(bomb.rct):
-            # ゲームオーバー時に，こうかとん画像を切り替え，1秒間表示させる
-            bird.change_img(8, screen)
-            pg.display.update()
-            time.sleep(1)
-            return
+        if bomb is not None:
+            if bird.rct.colliderect(bomb.rct): # 衝突判定
+                # ゲームオーバー時に，こうかとん画像を切り替え，1秒間表示させる
+                bird.change_img(8, screen) # こうかとん画像を泣いてるのに切り替え
+                pg.display.update()
+                time.sleep(1)
+                return
+        
+        if beam is not None:
+            if beam.rct.colliderect(bomb.rct): # ビームが爆弾を破壊した場合(ボムとビームは逆で動く)
+                beam = None
+                bomb = None
 
         key_lst = pg.key.get_pressed()
         bird.update(key_lst, screen) #どのキーが押されているかを判定し，こうかとんを移動させる
-        # beam.update(screen)   
-        bomb.update(screen)
+        # beam.update(screen)  
+        if bomb is not None: 
+            bomb.update(screen)
         if beam is not None:
             beam.update(screen)
         # bomb2.update(screen)
