@@ -166,6 +166,7 @@ def main():
     # bomb2 = Bomb((0, 0, 255), 20) # Bombを示す青色の半径20の円を生成
     bombs = [Bomb((255, 0, 0), 10) for _ in range(NUM_OF_BOMBS)] # ５個の爆弾のリスト
     score = Score()
+    beams = []
     clock = pg.time.Clock()
     tmr = 0
     while True:
@@ -174,7 +175,8 @@ def main():
                 return
             if event.type == pg.KEYDOWN and event.key == pg.K_SPACE: # スペースキー押下時
                 # スペースキー押下でBeamクラスのインスタンス生成
-                beam = Beam(bird)            
+                beams.append(Beam(bird))
+
         screen.blit(bg_img, [0, 0])
         
         for bomb in bombs:
@@ -190,18 +192,20 @@ def main():
         
         for i, bomb in enumerate(bombs):
             if beam is not None:
-                if beam.rct.colliderect(bomb.rct): # ビームが爆弾を破壊した場合(ボムとビームは逆で動く)
-                    beam = None
-                    bombs[i] = None
-                    score.score += 1
-                    bird.change_img(6, screen) # こうかとん画像が泣いてるのに切り替え
-                    pg.display.update()
+                for j, beam in enumerate(beams):
+                    if beam.rct.colliderect(bomb.rct): # ビームが爆弾を破壊した場合(ボムとビームは逆で動く)
+                        beams[j] = None
+                        bombs[i] = None
+                        score.score += 1
+                        bird.change_img(6, screen) # こうかとん画像が泣いてるのに切り替え
+                        pg.display.update()
 
 
         key_lst = pg.key.get_pressed()
         bird.update(key_lst, screen) #どのキーが押されているかを判定し，こうかとんを移動させる
         # beam.update(screen)  
         bombs = [bomb for bomb in bombs if bomb is not None] # Noneでないものリスト
+        beams = [beam for beam in beams if beam is not None]
         for bomb in bombs: 
             bomb.update(screen)
         if beam is not None:
