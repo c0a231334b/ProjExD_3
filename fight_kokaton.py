@@ -7,6 +7,7 @@ import pygame as pg
 
 WIDTH = 1100  # ゲームウィンドウの幅
 HEIGHT = 650  # ゲームウィンドウの高さ
+NUM_OF_BOMBS = 5  # 爆弾の数
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
 
@@ -148,6 +149,7 @@ def main():
     bomb = Bomb((255, 0, 0), 10) # Bombを示す赤色の半径10の円を生成
     beam = None  # Beam(bird)    # Beamクラスのインスタンス生成
     # bomb2 = Bomb((0, 0, 255), 20) # Bombを示す青色の半径20の円を生成
+    bombs = [Bomb((255, 0, 0), 10) for _ in range(NUM_OF_BOMBS)] # ５個の爆弾のリスト
     clock = pg.time.Clock()
     tmr = 0
     while True:
@@ -159,23 +161,27 @@ def main():
                 beam = Beam(bird)            
         screen.blit(bg_img, [0, 0])
         
-        if bomb is not None:
+        for bomb in bombs:
             if bird.rct.colliderect(bomb.rct): # 衝突判定
                 # ゲームオーバー時に，こうかとん画像を切り替え，1秒間表示させる
-                bird.change_img(8, screen) # こうかとん画像を泣いてるのに切り替え
+                bird.change_img(8, screen) # こうかとん画像が泣いてるのに切り替え
                 pg.display.update()
                 time.sleep(1)
                 return
         
-        if beam is not None:
-            if beam.rct.colliderect(bomb.rct): # ビームが爆弾を破壊した場合(ボムとビームは逆で動く)
-                beam = None
-                bomb = None
+        for i, bomb in enumerate(bombs):
+            if beam is not None:
+                if beam.rct.colliderect(bomb.rct): # ビームが爆弾を破壊した場合(ボムとビームは逆で動く)
+                    beam = None
+                    bombs[i] = None
+                    bird.change_img(6, screen) # こうかとん画像が泣いてるのに切り替え
+                    pg.display.update()
 
         key_lst = pg.key.get_pressed()
         bird.update(key_lst, screen) #どのキーが押されているかを判定し，こうかとんを移動させる
         # beam.update(screen)  
-        if bomb is not None: 
+        bombs = [bomb for bomb in bombs if bomb is not None] # Noneでないものリスト
+        for bomb in bombs: 
             bomb.update(screen)
         if beam is not None:
             beam.update(screen)
